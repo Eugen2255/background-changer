@@ -13,9 +13,9 @@
 
 // сглаживание краёв маски (из твоего первого кода)
 const EDGE_SMOOTH_PX   = 15;   // внешний софт у границы SelfieSeg
-const FEATHER_INNER_PX = 1;  // лёгкое «перо» внутрь при композите
+const FEATHER_INNER_PX = 2;  // лёгкое «перо» внутрь при композите
 const HALO_BLUR        = 3;   // радиус для кольца-ореола (размыть и вычесть)
-const HALO_ALPHA       = 1;  // сколько «съедать» наружный ореол
+const HALO_ALPHA       = 0.5;  // сколько «съедать» наружный ореол
 
 // визуальные параметры рук/кистей
 const ARM_FEATHER_PX   = 8;    // размытие краёв коридора рук
@@ -219,7 +219,7 @@ async function init() {
   try {
     const userId = localStorage.getItem("user_id");
     if (userId) {
-      const res = await fetch(`http://127.0.0.1:8000/backgrounds/${userId}`);
+      const res = await fetch(`http://127.0.0.1:8080/backgrounds/${userId}`);
       if (res.ok) {
         const data = await res.json();
         fillBackgroundGrid(data.backgrounds);
@@ -409,7 +409,7 @@ async function openBgPicker() {
 
     bgGridEl.innerHTML = "<p style='padding:10px'>⏳ Загрузка фонов...</p>";
 
-    const res = await fetch(`http://127.0.0.1:8000/backgrounds/${userId}`);
+    const res = await fetch(`http://127.0.0.1:8080/backgrounds/${userId}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
@@ -458,7 +458,7 @@ function fillBackgroundGrid(backgrounds) {
   bgGridEl.innerHTML = '';
   backgrounds.forEach(url => {
     const img = document.createElement('img');
-    img.src = `http://127.0.0.1:8000${url}`;
+    img.src = `http://127.0.0.1:8080${url}`;
     img.className = 'bg-thumb';
     img.onclick = () => selectBackground(img.src);
     bgGridEl.appendChild(img);
@@ -488,7 +488,7 @@ async function onBackgroundUpload(event) {
     formData.append("user_id", userId);
     formData.append("file", file);
 
-    const res = await fetch("http://127.0.0.1:8000/upload_background/", {
+    const res = await fetch("http://127.0.0.1:8080/upload_background/", {
       method: "POST",
       body: formData,
     });
@@ -498,7 +498,7 @@ async function onBackgroundUpload(event) {
 
     if (data?.path) {
       const newImg = document.createElement("img");
-      newImg.src = `http://127.0.0.1:8000${data.path}`;
+      newImg.src = `http://127.0.0.1:8080${data.path}`;
       newImg.className = "bg-thumb";
       newImg.onclick = () => selectBackground(newImg.src);
       bgGridEl.appendChild(newImg);

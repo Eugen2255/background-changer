@@ -1,13 +1,13 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
 from passlib.context import CryptContext
 from jose import jwt
 from typing import List
-import os, json, shutil
+import os, json, shutil, traceback
 
 # === CONFIG ===
 SECRET_KEY = "your-super-secret-key-change-in-production"
@@ -16,14 +16,18 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_FILE = os.path.join(CURRENT_DIR, "users.json")
-STATIC_DIR = os.path.join(CURRENT_DIR, "static")  # базовые фоны
-USERS_DIR = os.path.join(CURRENT_DIR, "users")    # папки пользователей
+STATIC_DIR = os.path.join(CURRENT_DIR, "static")   # базовые фоны
+USERS_DIR = os.path.join(CURRENT_DIR, "users")     # папки пользователей
 
 os.makedirs(STATIC_DIR, exist_ok=True)
 os.makedirs(USERS_DIR, exist_ok=True)
 
 # === PASSWORDS & TOKENS ===
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Полностью уходим от bcrypt -> используем PBKDF2-SHA256 (без лимита 72 байт, без нативных зависимостей)
+pwd_context = CryptContext(
+    schemes=["pbkdf2_sha256"],  # можно добавить "argon2" при желании
+    deprecated="auto",
+)
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
@@ -36,6 +40,12 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def _validate_password_or_400(pw: str):
+    if len(pw) < 8:
+        raise HTTPException(status_code=400, detail="Password too short (min 8)")
+    if len(pw.encode("utf-8")) > 4096:
+        raise HTTPException(status_code=400, detail="Password too long")
 
 # === MODELS ===
 class UserRegistration(BaseModel):
@@ -85,11 +95,17 @@ app = FastAPI(title="Human Segmentation App")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # при желании ограничь
+    allow_origins=["*"],  # при желании ограничь конкретными origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Глобальный обработчик: всегда JSON при неожиданных 500
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print("UNHANDLED EXCEPTION:\n", traceback.format_exc())
+    return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
 
 # === AUTH ===
 @app.post("/register/", response_model=UserResponse)
@@ -97,6 +113,8 @@ async def register(user_data: UserRegistration):
     for u in users_db.values():
         if u["username"] == user_data.username:
             raise HTTPException(status_code=400, detail="Username already exists")
+
+    _validate_password_or_400(user_data.password)
 
     user_id = str(max([int(uid) for uid in users_db.keys()] or [0]) + 1)
     hashed = get_password_hash(user_data.password)
@@ -169,16 +187,15 @@ async def get_user_file(user_id: str, filename: str):
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(path)
 
-# === FRONTEND ===
+# === FRONTEND (статика) ===
 FRONTEND_DIR = os.path.join(CURRENT_DIR, "..", "frontend")
 AUTH_DIR = os.path.join(FRONTEND_DIR, "auth")
 SEGMENT_DIR = os.path.join(FRONTEND_DIR, "segmentation")
 PRIVACY_DIR = os.path.join(CURRENT_DIR, "..", "privacy")
 
-app.mount("/users",        StaticFiles(directory=USERS_DIR),        name="users")
-app.mount("/static",       StaticFiles(directory=STATIC_DIR),       name="static")
-app.mount("/auth",         StaticFiles(directory=AUTH_DIR, html=True), name="auth")
-app.mount("/segmentation", StaticFiles(directory=SEGMENT_DIR, html=True), name="segmentation")
-app.mount("/privacy",      StaticFiles(directory=PRIVACY_DIR),      name="privacy")
-app.mount("/",             StaticFiles(directory=AUTH_DIR, html=True), name="root")
-
+app.mount("/users",        StaticFiles(directory=USERS_DIR),                 name="users")
+app.mount("/static",       StaticFiles(directory=STATIC_DIR),                name="static")
+app.mount("/auth",         StaticFiles(directory=AUTH_DIR, html=True),       name="auth")
+app.mount("/segmentation", StaticFiles(directory=SEGMENT_DIR, html=True),    name="segmentation")
+app.mount("/privacy",      StaticFiles(directory=PRIVACY_DIR),               name="privacy")
+app.mount("/",             StaticFiles(directory=AUTH_DIR, html=True),       name="root")
