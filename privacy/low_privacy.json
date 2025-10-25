@@ -1,0 +1,22 @@
+{
+    "employee": {
+        "full_name": "Лошманов Егор Дмитриевич",
+        "position": "Студент ИИР",
+        "company": "НГУ",
+        "department": "Мехатроника и Робототехника",
+        "office_location": "Новосибирск",
+        "contact": {
+            "email": "e.loshmanov@g.nsu.ru",
+            "telegram": "@bebra1515"
+        },
+        "branding": {
+            "logo_url": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+            "corporate_colors": {
+                "primary": "#0052CC",
+                "secondary": "#00B8D9"
+            },
+            "slogan": "Инновации в каждый кадр"
+        },
+        "privacy_level": "low"
+    }
+}

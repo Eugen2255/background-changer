@@ -1,0 +1,217 @@
+:root {
+  --accent: #5b9bff;
+  --accent-2: #7bd0ff;
+  --panel: #0f1821;
+  --stroke: #2b3b4a;
+  --text: #e8eef5;
+  --muted: #9eb4c8;
+  --radius: 14px;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg, #0a1119 0%, #0b1624 100%);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ====== Шапка ====== */
+.topbar {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(10,16,22,.85);
+  border-bottom: 1px solid #152433;
+  backdrop-filter: blur(10px);
+}
+
+.brand-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 16px var(--accent);
+  margin-right: 8px;
+}
+
+.topbar-title { font-weight: 600; letter-spacing: .2px; }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.layout {
+  display: grid; gap: 20px;
+  padding: 24px;
+}
+@media (min-width: 1100px) {
+  .layout { grid-template-columns: 1fr 350px; }
+}
+
+/* ====== Видео ====== */
+.stage {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+  background: #0f1821;
+}
+
+#outputCanvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* overlays */
+#overlayText {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  padding: 10px 14px;
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+  border-radius: 10px;
+  white-space: pre-line;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+/* ====== Контролы ====== */
+.controls {
+  background: rgba(20,30,45,0.8);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+  animation: fadeIn 0.6s ease both;
+}
+
+.group-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.group-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--stroke);
+  background: #0f1821;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn:hover {
+  background: #16283b;
+  transform: translateY(-1px);
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: #243243;
+}
+.btn.ghost:hover {
+  background: #121f2c;
+  color: #fff;
+}
+.btn.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 15px rgba(91,155,255,0.4);
+  transform: scale(1.02);
+}
+
+/* ====== Выбор фонового изображения ====== */
+.bg-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.bg-picker {
+  background: #0f1821;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  padding: 16px;
+  width: 80%;
+  max-width: 900px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+.bg-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.bg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+/* === Превью фонов === */
+.bg-thumb {
+  width: 100px;         /* ширина превью */
+  height: 70px;         /* фиксированная высота */
+  object-fit: cover;    /* обрезает лишнее, чтобы не искажалось */
+  margin: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bg-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+/* сетка выбора фонов */
+.bg-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#bgUploadBtn {
+  background-color: #3b82f6;
+  color: white;
+}
+#bgUploadBtn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+
+/* мелочь */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

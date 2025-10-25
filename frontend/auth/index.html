@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Авторизация — MediaPipe</title>
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body>
+  <div class="auth-wrapper fade-in" id="authSection">
+    <!-- необязательно: положи back.mp4 рядом с этим файлом, чтобы был красивый видеофон -->
+
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-dot"></div>
+        <h2>Вход / Регистрация</h2>
+        <p class="subtitle">Авторизуйтесь, чтобы продолжить</p>
+      </div>
+
+      <div class="auth-form">
+        <input type="text" id="username" placeholder="Имя пользователя" />
+        <input type="password" id="password" placeholder="Пароль" />
+        <input type="email" id="email" placeholder="Email (только при регистрации)" />
+      </div>
+
+      <div class="auth-actions">
+        <button class="btn primary" onclick="auth.login()">Войти</button>
+        <button class="btn secondary" onclick="auth.register()">Регистрация</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>

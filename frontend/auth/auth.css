@@ -1,0 +1,109 @@
+:root {
+  --accent: #5b9bff;
+  --accent-2: #7bd0ff;
+  --text: #e8eef5;
+  --muted: #9eb4c8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #0b1523;
+  color: var(--text);
+  overflow: hidden;
+}
+
+
+/* === Карточка === */
+.auth-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px);
+}
+
+.auth-card {
+  background: rgba(18, 26, 38, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 40px;
+  width: 360px;
+  box-shadow: 0 0 35px rgba(0,0,0,0.45);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.auth-header { text-align: center; margin-bottom: 24px; }
+.brand-dot {
+  width: 10px; height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 16px var(--accent);
+  margin: 0 auto 10px;
+}
+
+.auth-header h2 { margin: 6px 0; color: #fff; }
+.auth-header .subtitle { color: var(--muted); font-size: 0.9rem; }
+
+.auth-form {
+  display: flex; flex-direction: column;
+  gap: 12px; margin-bottom: 24px;
+}
+
+.auth-form input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+}
+
+.auth-actions { display: flex; gap: 12px; }
+
+.btn.primary {
+  flex: 1;
+  background: linear-gradient(135deg, #348aff, #5faaff);
+  border: none; color: #fff;
+  border-radius: 10px;
+  padding: 12px 0;
+  font-weight: 500; cursor: pointer;
+  transition: all 0.25s ease;
+}
+.btn.primary:hover { transform: translateY(-1px); }
+
+.btn.secondary {
+  flex: 1;
+  background: transparent;
+  color: #cde0ff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 12px 0;
+}
+.btn.secondary:hover { background: rgba(255,255,255,0.05); }
+
+/* toasts */
+.auth-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(16px);
+  background: rgba(25, 35, 50, 0.9);
+  color: #e8eef5;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  opacity: 0;
+  transition: all .3s ease;
+  z-index: 9999;
+}
+.auth-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+.auth-toast.success { border-color: rgba(78,158,255,.5); }
+.auth-toast.error { border-color: rgba(255,100,100,.6); }

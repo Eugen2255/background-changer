@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сегментация человека — MediaPipe</title>
+  <link rel="stylesheet" href="segment.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand-dot"></div>
+    <div class="topbar-title">Сегментация человека (MediaPipe)</div>
+    <div class="user-info">
+      <span id="usernameDisplay"></span>
+      <button onclick="auth.logout()" class="btn ghost small">Выйти</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- === Видео / сегментация === -->
+    <section class="stage" id="stage">
+      <canvas id="outputCanvas" width="640" height="480"></canvas>
+      <div id="overlayText"></div>
+    </section>
+
+    <!-- === Панель управления === -->
+    <section class="controls">
+      <div class="group">
+        <div class="group-title">Фон</div>
+        <div class="group-row">
+          <button type="button" class="btn active" id="bgColorBtn">Цвет</button>
+          <button type="button" class="btn" id="bgImageBtn">Изображение</button>
+          <button type="button" class="btn" id="bgBlurBtn">Размытие</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Приватность</div>
+        <div class="group-row">
+          <button class="btn" id="showTextHighBtn">Высокая</button>
+          <button class="btn" id="showTextMediumBtn">Средняя</button>
+          <button class="btn" id="showTextBtn">Низкая</button>
+          <button class="btn ghost" id="hideTextBtn">Скрыть</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- === Модальное окно выбора фона === -->
+  <div id="bgPicker" class="hidden bg-picker-overlay">
+    <div class="bg-picker">
+      <div class="bg-picker-header">
+        <h3>Выбор фонового изображения</h3>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="file" id="bgUploadInput" accept="image/*" style="display:none">
+          <button id="bgUploadBtn" class="btn small">➕ Добавить фон</button>
+          <button id="bgPickerClose" class="btn ghost small">Закрыть ✕</button>
+        </div>
+      </div>
+
+      <div id="bgGrid" class="bg-grid"></div>
+    </div>
+  </div>
+
+  <!-- === Скрипты === -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js"></script>
+  <script src="../auth/auth.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
